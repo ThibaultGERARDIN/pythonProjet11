@@ -84,8 +84,8 @@ def purchasePlaces():
     if error_message:
         flash(error_message)
         return redirect(url_for("book", competition=competition["name"], club=club["name"]))
-    placesRequired = int(request.form["places"])
-    if take_places(placesRequired, club, competition):
+    places_required = int(request.form["places"])
+    if take_places(places_required, club, competition):
         flash("Great-booking complete!")
         return render_template("welcome.html", club=club, competitions=competitions)
     else:
