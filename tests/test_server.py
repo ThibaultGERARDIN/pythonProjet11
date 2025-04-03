@@ -1,4 +1,4 @@
-class TestAuth:
+class TestBooking:
 
     def test_valid_booking_should_update_points(self, client, test_club, test_competition):
         places = 1
