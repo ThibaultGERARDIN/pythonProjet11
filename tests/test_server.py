@@ -1,7 +1,7 @@
 from server import MAX_PER_CLUB
 
 
-class TestAuth:
+class TestBooking:
 
     def test_valid_booking_should_display_confirmation_message(self, client, test_club, test_competition):
         places = 1
