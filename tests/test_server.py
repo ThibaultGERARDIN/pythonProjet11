@@ -1,6 +1,3 @@
-from tests.config import client, test_club, future_competition, past_competition
-
-
 class TestBooking:
 
     def test_valid_booking_future_competitions(self, client, test_club, future_competition):
