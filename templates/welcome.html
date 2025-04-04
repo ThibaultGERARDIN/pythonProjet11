@@ -16,6 +16,10 @@
        </ul>
     {% endif%}
     Points available: {{club['points']}}
+    <hr />
+    <form action="pointsBoard" method="post">
+        <button type="submit">Show other clubs points</button>
+    </form>
     <h3>Competitions:</h3>
     <ul>
         {% for comp in competitions%}

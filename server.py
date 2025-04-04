@@ -31,11 +31,15 @@ def create_app(config={}):
     app.config.update(config)
     app.secret_key = "something_special"
 
-    competitions_json = "competitions.json"
-    clubs_json = "clubs.json"
-    if app.config["TESTING"] is True:
+    if app.config.get("TESTING_NOCLUBS"):
+        competitions_json = "tests/test_dataset_noclubs.json"
+        clubs_json = "tests/test_dataset_noclubs.json"
+    elif app.config.get("TESTING"):
         competitions_json = "tests/test_dataset.json"
         clubs_json = "tests/test_dataset.json"
+    else:
+        competitions_json = "competitions.json"
+        clubs_json = "clubs.json"
 
     competitions = loadCompetitions(competitions_json)
     clubs = loadClubs(clubs_json)
@@ -102,7 +106,9 @@ def create_app(config={}):
             competition["numberOfPlaces"] = places_remaining - places_required
             return render_template("welcome.html", club=club, competitions=competitions)
 
-    # TODO: Add route for points display
+    @app.route("/pointsBoard", methods=["POST"])
+    def pointsBoard():
+        return render_template("points_board.html", clubs=clubs)
 
     @app.route("/logout")
     def logout():

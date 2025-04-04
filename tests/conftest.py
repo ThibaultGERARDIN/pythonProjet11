@@ -35,3 +35,10 @@ def future_competition():
 def past_competition():
     competitions = loadCompetitions("tests/test_dataset.json")
     return [comp for comp in competitions if comp["name"] == "Past Competition"][0]
+
+
+@pytest.fixture
+def client_noclubs():
+    app = create_app({"TESTING": True, "TESTING_NOCLUBS": True})
+    with app.test_client() as client:
+        yield client
