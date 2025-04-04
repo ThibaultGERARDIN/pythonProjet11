@@ -23,3 +23,15 @@ def test_competition():
 def zero_point_club():
     clubs = loadClubs("tests/test_dataset.json")
     return [club for club in clubs if club["points"] == 0][0]
+
+
+@pytest.fixture
+def future_competition():
+    competitions = loadCompetitions("tests/test_dataset.json")
+    return [comp for comp in competitions if comp["name"] == "Future Competition"][0]
+
+
+@pytest.fixture
+def past_competition():
+    competitions = loadCompetitions("tests/test_dataset.json")
+    return [comp for comp in competitions if comp["name"] == "Past Competition"][0]

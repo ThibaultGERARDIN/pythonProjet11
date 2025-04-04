@@ -1,7 +1,9 @@
 import json
+from datetime import datetime
 from flask import Flask, render_template, request, redirect, flash, url_for
 
 MAX_PER_CLUB = 12
+
 
 
 def loadClubs(clubs_json):
@@ -15,6 +17,13 @@ def loadClubs(clubs_json):
 def loadCompetitions(competitions_json):
     with open(competitions_json) as comps:
         listOfCompetitions = json.load(comps)["competitions"]
+        date_format = "%Y-%m-%d %H:%M:%S"
+        for competition in listOfCompetitions:
+            competition["date"] = datetime.strptime(competition["date"], date_format)
+            if competition["date"] < datetime.now():
+                competition["is_past"] = True
+            else:
+                competition["is_past"] = False
         return listOfCompetitions
 
 
@@ -37,10 +46,12 @@ def create_app(config={}):
     def index():
         return render_template("index.html")
 
+
     @app.route("/showSummary", methods=["POST"])
     def showSummary():
         club = [club for club in clubs if club["email"] == request.form["email"]][0]
         return render_template("welcome.html", club=club, competitions=competitions)
+
 
     @app.route("/book/<competition>/<club>")
     def book(competition, club):
@@ -63,6 +74,9 @@ def create_app(config={}):
         places_required = int(request.form["places"])
         places_remaining = int(competition["numberOfPlaces"])
         club_places = int(club["points"])
+        if competition["is_past"] is True:
+            flash("Cannot book past competitions.")
+            return bad_request()
         if club_places == 0:
             flash("Sorry you don't have any points left.")
             return redirect(url_for("index"))
@@ -87,8 +101,14 @@ def create_app(config={}):
             competition["numberOfPlaces"] = places_remaining - places_required
             return render_template("welcome.html", club=club, competitions=competitions)
 
+    # TODO: Add route for points display
+
     @app.route("/logout")
     def logout():
         return redirect(url_for("index"))
+
+    @app.errorhandler(400)
+    def bad_request():
+        return render_template("exception.html"), 400
 
     return app
