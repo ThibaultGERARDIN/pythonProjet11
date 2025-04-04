@@ -1,0 +1,31 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Gudlft | Clubs points board</title>
+    </head>
+    <body>
+        <h1>GUDLFT points board</h1>
+        <p>To <a href="{{url_for('index')}}">login.</a></p>
+
+        <p>Each point allows you to book 1 entry into any future competition, within the limit of 12 entries.</p>
+        <table>
+            <thead>
+                <th>Club</th>
+                <th>Points</th>
+            </thead>
+            <tbody>
+                {% if clubs and clubs|length > 0 %}
+                    {% for club in clubs %}
+                        <tr>
+                            <td style="border: 1px solid black">{{ club.name }} </td>
+                            <td style="border: 1px solid black">{{ club.points }}</td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <p>No clubs are registered</p>
+                {% endif %}
+            </tbody>
+        </table>
+    </body>
+</html>
