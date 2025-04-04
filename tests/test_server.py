@@ -3,17 +3,18 @@ from server import MAX_PER_CLUB
 
 class TestBooking:
 
-    def test_valid_booking_should_display_confirmation_message(self, client, test_club, test_competition):
+    def test_valid_booking_should_update_points_and_tell_number(self, client, test_club, test_competition):
         places = 1
         initial_club_points = int(test_club["points"])
+        initial_places_in_comp = int(test_competition["numberOfPlaces"])
         response = client.post(
             "/purchasePlaces",
             data={"competition": test_competition["name"], "club": test_club["name"], "places": places},
         )
         assert response.status_code == 200
-        confirmation_message = "Great-booking complete!"
-        assert confirmation_message in response.data.decode("utf-8")
-        assert f"Points available: {initial_club_points-places}" in response.data.decode("utf-8")
+        assert f"Points available: {initial_club_points - places}" in response.data.decode()
+        assert f"Great, succesfully booked {places} place(s)" in response.data.decode()
+        assert f"Number of Places: {initial_places_in_comp - places}" in response.data.decode()
 
     def test_shouldnt_book_more_than_max_per_club(self, client, test_club, test_competition):
         places = MAX_PER_CLUB + 1
@@ -34,7 +35,7 @@ class TestBooking:
             data={"competition": test_competition["name"], "club": test_club["name"], "places": places},
         )
         assert response.status_code == 200
-        assert b"Great-booking complete!" in response.data
+        assert f"Great, succesfully booked {places} place(s)" in response.data.decode()
         assert f"Points available: {initial_club_points-places}" in response.data.decode()
         assert f"Number of Places: {remainingPlaces - places}" in response.data.decode()
 
@@ -94,7 +95,7 @@ class TestBooking:
             data={"competition": future_competition["name"], "club": test_club["name"], "places": places},
         )
         assert response.status_code == 200
-        assert b"Great-booking complete!" in response.data
+        assert f"Great, succesfully booked {places} place(s)" in response.data.decode()
 
     def test_shouldnt_book_past_competitions(self, client, test_club, past_competition):
         places = 1

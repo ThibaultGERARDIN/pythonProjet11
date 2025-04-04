@@ -97,7 +97,7 @@ def create_app(config={}):
             flash("You booked 0 places, try again !")
             return render_template("welcome.html", club=club, competitions=competitions)
         else:
-            flash("Great-booking complete!")
+            flash(f"Great, succesfully booked {places_required} place(s)!")
             club["points"] = club_places - places_required
             competition["numberOfPlaces"] = places_remaining - places_required
             return render_template("welcome.html", club=club, competitions=competitions)
