@@ -33,7 +33,6 @@ def create_app(config={}):
 
     competitions_json = "competitions.json"
     clubs_json = "clubs.json"
-
     if app.config["TESTING"] is True:
         competitions_json = "tests/test_dataset.json"
         clubs_json = "tests/test_dataset.json"
@@ -47,7 +46,12 @@ def create_app(config={}):
 
     @app.route("/showSummary", methods=["POST"])
     def showSummary():
-        club = [club for club in clubs if club["email"] == request.form["email"]][0]
+        email = request.form["email"]
+        try:
+            club = [club for club in clubs if club["email"] == email][0]
+        except IndexError:
+            flash("Sorry, that email wasn't found.")
+            return redirect(url_for("index"))
         return render_template("welcome.html", club=club, competitions=competitions)
 
     @app.route("/book/<competition>/<club>")
