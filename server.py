@@ -1,8 +1,6 @@
 import json
 from flask import Flask, render_template, request, redirect, flash, url_for
 
-MAX_PER_CLUB = 12
-
 
 def loadClubs(clubs_json):
     with open(clubs_json) as c:
@@ -54,14 +52,10 @@ def create_app(config={}):
         competition = [c for c in competitions if c["name"] == request.form["competition"]][0]
         club = [c for c in clubs if c["name"] == request.form["club"]][0]
         placesRequired = int(request.form["places"])
-        if placesRequired > MAX_PER_CLUB:
-            flash(f"Cannot book - Trying to book more than maximum allowed ({MAX_PER_CLUB})")
-            return render_template("booking.html", club=club, competition=competition)
-        else:
-            flash("Great-booking complete!")
-            club["points"] = int(club["points"]) - placesRequired
-            competition["numberOfPlaces"] = int(competition["numberOfPlaces"]) - placesRequired
-            return render_template("welcome.html", club=club, competitions=competitions)
+        flash(f"Great, succesfully booked {placesRequired} place(s)!")
+        competition["numberOfPlaces"] = int(competition["numberOfPlaces"]) - placesRequired
+        club["points"] = int(club["points"]) - placesRequired
+        return render_template("welcome.html", club=club, competitions=competitions)
 
     # TODO: Add route for points display
 
