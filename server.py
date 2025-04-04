@@ -5,7 +5,6 @@ from flask import Flask, render_template, request, redirect, flash, url_for
 MAX_PER_CLUB = 12
 
 
-
 def loadClubs(clubs_json):
     with open(clubs_json) as c:
         listOfClubs = json.load(c)["clubs"]
@@ -46,12 +45,10 @@ def create_app(config={}):
     def index():
         return render_template("index.html")
 
-
     @app.route("/showSummary", methods=["POST"])
     def showSummary():
         club = [club for club in clubs if club["email"] == request.form["email"]][0]
         return render_template("welcome.html", club=club, competitions=competitions)
-
 
     @app.route("/book/<competition>/<club>")
     def book(competition, club):
