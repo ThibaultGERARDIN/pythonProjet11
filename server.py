@@ -31,15 +31,15 @@ def create_app(config={}):
     app.config.update(config)
     app.secret_key = "something_special"
 
+    competitions_json = "competitions.json"
+    clubs_json = "clubs.json"
+
     if app.config.get("TESTING_NOCLUBS"):
         competitions_json = "tests/test_dataset_noclubs.json"
         clubs_json = "tests/test_dataset_noclubs.json"
     elif app.config.get("TESTING"):
         competitions_json = "tests/test_dataset.json"
         clubs_json = "tests/test_dataset.json"
-    else:
-        competitions_json = "competitions.json"
-        clubs_json = "clubs.json"
 
     competitions = loadCompetitions(competitions_json)
     clubs = loadClubs(clubs_json)
@@ -60,17 +60,23 @@ def create_app(config={}):
 
     @app.route("/book/<competition>/<club>")
     def book(competition, club):
-        foundClub = [c for c in clubs if c["name"] == club][0]
-        foundCompetition = [c for c in competitions if c["name"] == competition][0]
+        try:
+            foundClub = [c for c in clubs if c["name"] == club][0]
+        except IndexError:
+            flash("Something went wrong, try again.")
+            return bad_request()
+        try:
+            foundCompetition = [c for c in competitions if c["name"] == competition][0]
+        except IndexError:
+            flash("Something went wrong, try again.")
+            return bad_request()
+
         club_places = int(foundClub["points"])
         if club_places == 0:
             flash("Sorry you don't have any points left.")
-            return redirect(url_for("index"))
-        if foundClub and foundCompetition:
-            return render_template("booking.html", club=foundClub, competition=foundCompetition)
-        else:
-            flash("Something went wrong-please try again")
-            return render_template("welcome.html", club=club, competitions=competitions)
+            return bad_request()
+
+        return render_template("booking.html", club=foundClub, competition=foundCompetition)
 
     @app.route("/purchasePlaces", methods=["POST"])
     def purchasePlaces():
@@ -84,7 +90,7 @@ def create_app(config={}):
             return bad_request()
         if club_places == 0:
             flash("Sorry you don't have any points left.")
-            return redirect(url_for("index"))
+            return bad_request()
         elif places_required > MAX_PER_CLUB:
             flash(f"Cannot book - Trying to book more than maximum allowed ({MAX_PER_CLUB})")
             return render_template("booking.html", club=club, competition=competition)

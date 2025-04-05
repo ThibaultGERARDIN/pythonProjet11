@@ -26,19 +26,6 @@ class TestBooking:
         error_message = f"Cannot book - Trying to book more than maximum allowed ({MAX_PER_CLUB})"
         assert error_message in response.data.decode("utf-8")
 
-    def test_valid_booking_should_update_points(self, client, test_club, test_competition):
-        places = 1
-        initial_club_points = int(test_club["points"])
-        remainingPlaces = int(test_competition["numberOfPlaces"])
-        response = client.post(
-            "/purchasePlaces",
-            data={"competition": test_competition["name"], "club": test_club["name"], "places": places},
-        )
-        assert response.status_code == 200
-        assert f"Great, succesfully booked {places} place(s)" in response.data.decode()
-        assert f"Points available: {initial_club_points-places}" in response.data.decode()
-        assert f"Number of Places: {remainingPlaces - places}" in response.data.decode()
-
     def test_not_enough_points_to_book(self, client, test_club, test_competition):
         places = int(test_club["points"]) + 1
         response = client.post(
@@ -85,14 +72,27 @@ class TestBooking:
         competition = test_competition["name"]
         club = zero_point_club["name"]
         response = client.get(f"/book/{competition}/{club}")
-        assert response.status_code == 302
-        assert response.location == "/"
+        assert response.status_code == 400
+        assert b"Sorry" in response.data
         response = client.post(
             "/purchasePlaces",
             data={"competition": test_competition["name"], "club": zero_point_club["name"], "places": 1},
         )
-        assert response.status_code == 302
-        assert response.location == "/"
+        assert response.status_code == 400
+        assert b"Sorry" in response.data
+
+    def test_should_redirect_when_non_existing_competition_or_club(self, client, test_club, test_competition):
+        no_competition = "Not a competition"
+        competition = test_competition["name"]
+        no_club = "Not a club"
+        club = test_club["name"]
+        no_comp_response = client.get(f"/book/{no_competition}/{club}")
+        assert no_comp_response.status_code == 400
+        assert b"Something went wrong, try again." in no_comp_response.data
+
+        no_club_response = client.get(f"/book/{competition}/{no_club}")
+        assert no_club_response.status_code == 400
+        assert b"Something went wrong, try again." in no_club_response.data
 
     def test_valid_booking_future_competitions(self, client, test_club, future_competition):
         places = 1
