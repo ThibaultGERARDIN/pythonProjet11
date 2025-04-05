@@ -87,6 +87,12 @@ class TestBooking:
         response = client.get(f"/book/{competition}/{club}")
         assert response.status_code == 302
         assert response.location == "/"
+        response = client.post(
+            "/purchasePlaces",
+            data={"competition": test_competition["name"], "club": zero_point_club["name"], "places": 1},
+        )
+        assert response.status_code == 302
+        assert response.location == "/"
 
     def test_valid_booking_future_competitions(self, client, test_club, future_competition):
         places = 1
