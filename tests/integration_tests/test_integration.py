@@ -43,5 +43,5 @@ class TestIntegrationClass:
         assert logout_page.status_code == 302
 
         # Check club points on pointboard
-        points_board = client.post("/pointsBoard", data=data)
+        points_board = client.get("/pointsBoard")
         assert f'{test_club["name"]}' in points_board.data.decode()

@@ -140,7 +140,7 @@ class TestPointsBoard:
     def test_board_correctly_displays_clubs(self, client):
         clubs = loadClubs("tests/test_dataset.json")
 
-        response = client.post("/pointsBoard")
+        response = client.get("/pointsBoard")
         assert response.status_code == 200
 
         data = response.data.decode("utf-8")
@@ -150,7 +150,7 @@ class TestPointsBoard:
 
     def test_board_correctly_displays_no_clubs(self, client_noclubs):
 
-        response = client_noclubs.post("/pointsBoard")
+        response = client_noclubs.get("/pointsBoard")
         assert response.status_code == 200
         data = response.data.decode("utf-8")
         assert "No clubs are registered" in data

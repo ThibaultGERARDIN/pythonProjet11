@@ -112,7 +112,7 @@ def create_app(config={}):
             competition["numberOfPlaces"] = places_remaining - places_required
             return render_template("welcome.html", club=club, competitions=competitions)
 
-    @app.route("/pointsBoard", methods=["POST"])
+    @app.route("/pointsBoard")
     def pointsBoard():
         return render_template("points_board.html", clubs=clubs)
 

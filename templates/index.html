@@ -6,6 +6,10 @@
 </head>
 <body>
     <h1>Welcome to the GUDLFT Registration Portal!</h1>
+    <form action="pointsBoard" method="get">
+        <button type="submit">Show points board</button>
+    </form>
+    <br />
     {% with messages = get_flashed_messages()%}
     {% if messages %}
         <ul>
