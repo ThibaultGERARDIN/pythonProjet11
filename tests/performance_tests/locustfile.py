@@ -8,13 +8,7 @@ class ProjectPerfTest(HttpUser):
 
     @task
     def pointsBoard(self):
-        data = {
-            "clubs": [
-                {"name": "Test Club", "email": "test@test.fr", "points": "11"},
-                {"name": "Zero point club", "email": "zero@mail.fr", "points": "0"},
-            ]
-        }
-        self.client.post("pointsBoard", data=data)
+        self.client.get("pointsBoard")
 
     @task
     def summary(self):
